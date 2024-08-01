@@ -20,16 +20,18 @@ public partial class DealerPortalContext : DbContext
 
     public virtual DbSet<Loan> Loans { get; set; }
 
+    public virtual DbSet<User> Users { get; set; }
+
     public virtual DbSet<Vendor> Vendors { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseSqlServer("Name=DevConnection");
+        => optionsBuilder.UseSqlServer("Name=ConnectionStrings:DevConnection");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Applicant>(entity =>
         {
-            entity.HasKey(e => e.ApplicantId).HasName("PK__Applican__39AE9148BDBF19CF");
+            entity.HasKey(e => e.ApplicantId).HasName("PK__Applican__39AE914823D73D1B");
 
             entity.Property(e => e.ApplicantId).HasColumnName("ApplicantID");
             entity.Property(e => e.ApplicantName)
@@ -45,7 +47,7 @@ public partial class DealerPortalContext : DbContext
 
         modelBuilder.Entity<Loan>(entity =>
         {
-            entity.HasKey(e => e.LoanId).HasName("PK__Loans__4F5AD43745D7B64C");
+            entity.HasKey(e => e.LoanId).HasName("PK__Loans__4F5AD437572840B5");
 
             entity.Property(e => e.LoanId).HasColumnName("LoanID");
             entity.Property(e => e.ApplicantId).HasColumnName("ApplicantID");
@@ -55,16 +57,20 @@ public partial class DealerPortalContext : DbContext
             entity.Property(e => e.Status)
                 .HasMaxLength(50)
                 .IsUnicode(false);
+        });
 
-            entity.HasOne(d => d.Applicant).WithMany(p => p.Loans)
-                .HasForeignKey(d => d.ApplicantId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Loans__Applicant__4E88ABD4");
+        modelBuilder.Entity<User>(entity =>
+        {
+            entity.HasKey(e => e.UserId).HasName("PK__User__1788CC4C23ED5DAC");
+
+            entity.ToTable("User");
+
+            entity.Property(e => e.UserName).HasMaxLength(100);
         });
 
         modelBuilder.Entity<Vendor>(entity =>
         {
-            entity.HasKey(e => e.VendorId).HasName("PK__Vendors__FC8618D3A6152AC4");
+            entity.HasKey(e => e.VendorId).HasName("PK__Vendors__FC8618D3261FE9BB");
 
             entity.Property(e => e.VendorId).HasColumnName("VendorID");
             entity.Property(e => e.Address)
@@ -87,11 +93,11 @@ public partial class DealerPortalContext : DbContext
 
             entity.HasOne(d => d.Applicant).WithMany(p => p.Vendors)
                 .HasForeignKey(d => d.ApplicantId)
-                .HasConstraintName("FK__Vendors__Applica__52593CB8");
+                .HasConstraintName("FK__Vendors__Applica__4E88ABD4");
 
             entity.HasOne(d => d.Loan).WithMany(p => p.Vendors)
                 .HasForeignKey(d => d.LoanId)
-                .HasConstraintName("FK__Vendors__LoanID__5165187F");
+                .HasConstraintName("FK__Vendors__LoanID__4D94879B");
         });
 
         OnModelCreatingPartial(modelBuilder);
